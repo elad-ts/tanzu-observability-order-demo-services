@@ -32,7 +32,7 @@ jobs:
       with:
         context: ./core-services
         push: true
-        tags: ghcr.io/${{ github.actor }}/my-order-app/core-services:latest-amd64
+        tags: ghcr.io/${{ github.actor }}/tanzu-observability-order-demo-services/core-services:latest-amd64
         platforms: linux/amd64
 
     # Build and push the Docker image for order-service
@@ -41,5 +41,5 @@ jobs:
       with:
         context: ./order-service
         push: true
-        tags: ghcr.io/${{ github.actor }}/my-order-app/order-service:latest-amd64
+        tags: ghcr.io/${{ github.actor }}/tanzu-observability-order-demo-services/order-service:latest-amd64
         platforms: linux/amd64
