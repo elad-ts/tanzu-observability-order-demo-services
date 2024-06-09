@@ -1,0 +1,161 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: my-app
+    run: order
+  name: order
+  annotations:
+    instrumentation.opentelemetry.io/inject-java: "default/my-instrumentation"
+spec:
+  containers:
+    - image: docker.io/eladhr/order-service
+      name: order
+      env:
+        - name: ORDER_SERVICE_REQUEST_INTERVAL
+          value: "5000"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "application=ordersApp"
+      command: ["java"]
+      args: ["-jar", "order-service-1.0-SNAPSHOT.jar", "--spring.profiles.active=order,order-remote"]
+      ports:
+        - containerPort: 8080
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: my-app
+    run: payment
+  name: payment
+  annotations:
+    instrumentation.opentelemetry.io/inject-java: "default/my-instrumentation"
+spec:
+  containers:
+    - image: docker.io/eladhr/core-services
+      name: payment
+      env:
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "application=ordersApp"
+      command: ["java"]
+      args: ["-jar", "core-services-1.0-SNAPSHOT.jar", "--spring.profiles.active=payment,payment-remote"]
+      ports:
+        - containerPort: 8080
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: my-app
+    run: delivery
+  name: delivery
+  annotations:
+    instrumentation.opentelemetry.io/inject-java: "default/my-instrumentation"
+spec:
+  containers:
+    - image: docker.io/eladhr/core-services
+      name: delivery
+      env:
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "application=ordersApp"
+      command: ["java"]
+      args: ["-jar", "core-services-1.0-SNAPSHOT.jar", "--spring.profiles.active=delivery,delivery-remote"]
+      ports:
+        - containerPort: 8080
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: my-app
+    run: inventory
+  name: inventory
+  annotations:
+    instrumentation.opentelemetry.io/inject-java: "default/my-instrumentation"
+spec:
+  containers:
+    - image: docker.io/eladhr/core-services
+      name: inventory
+      env:
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "application=ordersApp"
+      command: ["java"]
+      args: ["-jar", "core-services-1.0-SNAPSHOT.jar", "--spring.profiles.active=inventory,inventory-remote"]
+      ports:
+        - containerPort: 8080
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  labels:
+    app: my-app
+    run: order
+spec:
+  selector:
+    app: my-app
+    run: order
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  labels:
+    app: my-app
+    run: payment
+spec:
+  selector:
+    app: my-app
+    run: payment
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: delivery-service
+  labels:
+    app: my-app
+    run: delivery
+spec:
+  selector:
+    app: my-app
+    run: delivery
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+  labels:
+    app: my-app
+    run: inventory
+spec:
+  selector:
+    app: my-app
+    run: inventory
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

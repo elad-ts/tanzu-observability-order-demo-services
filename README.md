@@ -1,1 +1,1 @@
-# tanzul-observability-order-demo-services
+my-demo-app
