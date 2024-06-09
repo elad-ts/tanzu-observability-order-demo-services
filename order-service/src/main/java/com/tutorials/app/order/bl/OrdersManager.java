@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,7 +18,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-@Profile("order")
 @Service
 public class OrdersManager {
 
@@ -36,11 +36,8 @@ public class OrdersManager {
     @Value("${inventory.service.url}")
     private String inventoryServiceUrl;
 
-    @Value("${order.service.request.interval}")
-    private long orderServiceRequestInterval;
-
     private final Counter orderCounter;
-    private final ScheduledExecutorService scheduler;
+
 
     private static final String[] PRODUCTS = {"ProductA", "ProductB", "ProductC"};
     private static final String[] PAYMENTS = {"CREDIT_CARD", "PAYPAL", "BANK_TRANSFER"};
@@ -50,14 +47,9 @@ public class OrdersManager {
 
     public OrdersManager(MeterRegistry meterRegistry) {
         this.orderCounter = meterRegistry.counter("orders.counter");
-        this.scheduler = Executors.newScheduledThreadPool(1);
     }
 
-    @PostConstruct
-    public void init() {
-        scheduleNextOrder();
-    }
-
+    @Scheduled(fixedDelay = 1000, initialDelay = 500)
     public void generateOrder() {
         String product = PRODUCTS[random.nextInt(PRODUCTS.length)];
         String payment = PAYMENTS[random.nextInt(PAYMENTS.length)];
@@ -79,15 +71,5 @@ public class OrdersManager {
         }
 
         orderCounter.increment();
-        scheduleNextOrder();
-    }
-
-    private void scheduleNextOrder() {
-        long nextDelay = calculateNextDelay();
-        scheduler.schedule(this::generateOrder, nextDelay, TimeUnit.MILLISECONDS);
-    }
-
-    private long calculateNextDelay() {
-        return orderServiceRequestInterval + random.nextInt((int) orderServiceRequestInterval);
     }
 }

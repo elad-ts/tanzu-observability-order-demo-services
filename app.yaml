@@ -9,7 +9,7 @@ metadata:
     instrumentation.opentelemetry.io/inject-java: "default/my-instrumentation"
 spec:
   containers:
-    - image: docker.io/eladhr/order-service
+    - image: ghcr.io/elad-ts/tanzu-observability-order-demo-services/order-service  
       name: order
       env:
         - name: ORDER_SERVICE_REQUEST_INTERVAL
@@ -34,7 +34,7 @@ metadata:
     instrumentation.opentelemetry.io/inject-java: "default/my-instrumentation"
 spec:
   containers:
-    - image: docker.io/eladhr/core-services
+    - image: ghcr.io/elad-ts/tanzu-observability-order-demo-services/core-services
       name: payment
       env:
         - name: OTEL_RESOURCE_ATTRIBUTES
@@ -57,7 +57,7 @@ metadata:
     instrumentation.opentelemetry.io/inject-java: "default/my-instrumentation"
 spec:
   containers:
-    - image: docker.io/eladhr/core-services
+    - image: ghcr.io/elad-ts/tanzu-observability-order-demo-services/core-services
       name: delivery
       env:
         - name: OTEL_RESOURCE_ATTRIBUTES
@@ -80,7 +80,7 @@ metadata:
     instrumentation.opentelemetry.io/inject-java: "default/my-instrumentation"
 spec:
   containers:
-    - image: docker.io/eladhr/core-services
+    - image: ghcr.io/elad-ts/tanzu-observability-order-demo-services/core-services
       name: inventory
       env:
         - name: OTEL_RESOURCE_ATTRIBUTES
