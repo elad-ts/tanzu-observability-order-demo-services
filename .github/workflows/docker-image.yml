@@ -1,0 +1,45 @@
+name: OCI Image CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Set up QEMU and Docker Buildx for cross-platform builds
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      # Login to GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push the Docker image for core-services
+      - name: Build and push Docker image for core-services
+        uses: docker/build-push-action@v4
+        with:
+          context: ./core-services
+          push: true
+          tags: ghcr.io/${{ github.actor }}/my--app/core-services:latest-amd64
+          platforms: linux/amd64
+
+      # Build and push the Docker image for order-service
+      - name: Build and push Docker image for order-service
+        uses: docker/build-push-action@v4
+        with:
+          context: ./order-service
+          push: true
+          tags: ghcr.io/${{ github.actor }}/my-order-app/order-service:latest-amd64
+          platforms: linux/amd64
