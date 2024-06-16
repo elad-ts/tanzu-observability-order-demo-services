@@ -32,7 +32,7 @@ jobs:
         with:
           context: ./core-services
           push: true
-          tags: ghcr.io/elad-ts/tanzu-observability-order-demo-services/core-services:latest
+          tags: ghcr.io/terasky-int/tanzu-observability-order-demo-services/core-services:latest
           platforms: linux/amd64
 
       # Build and push the Docker image for order-service
@@ -41,5 +41,5 @@ jobs:
         with:
           context: ./order-service
           push: true
-          tags: ghcr.io/elad-ts/tanzu-observability-order-demo-services/order-service:latest
+          tags: ghcr.io/terasky-int/tanzu-observability-order-demo-services/order-service:latest
           platforms: linux/amd64
